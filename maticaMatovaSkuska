@@ -1,0 +1,132 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+Matica db 0,2,4,3,2
+	   db 2,0,5,0,0
+	   db 4,5,0,0,3
+	   db 3,0,0,0,4
+	   db 2,0,3,4,0
+sprava db "Taky usek neexistuje",0ah,0dh,0
+konst db 5
+
+
+.code
+main PROC
+	call Clrscr
+	call ReadChar
+	mov bl,al
+	sub bl,48
+	call ReadChar
+	sub al,48
+	dec al
+	mul konst
+	dec bl
+	add bl,al
+	mov eax,0
+	mov al,bl
+	mov bl,Matica[eax]
+	mov al,bl
+	add al,48
+	cmp al,'0'
+	je Navestie
+	call WriteChar
+	mov al,0ah
+	call WriteChar
+	jmp Hladaj
+
+	Navestie:
+	mov edx,offset sprava
+	call WriteString
+
+	Hladaj:
+	mov ecx,24
+	mov edi,1
+	mov dl,Matica[edi]
+	Cyklus1:
+	inc edi
+	cmp Matica[edi],0
+	je Preskoc
+	cmp dl,Matica[edi]
+	ja Prirad
+	loop Cyklus1
+
+	mov al,dl
+	add al,48
+	call WriteChar
+	jmp HladajUzly
+
+	Prirad:
+	mov dl,Matica[edi]
+	dec ecx
+	jmp Cyklus1
+
+	Preskoc:
+	dec ecx
+	jmp Cyklus1
+
+
+	HladajUzly:
+	mov ecx,5
+	mov edi,-1
+	Cyklus2:
+	mov ebx,ecx
+	
+		mov ecx,5
+		mov esi,0
+		
+		Cyklus3:
+		inc edi
+		cmp Matica[edi],0
+		je Preskoc2
+		inc esi
+		x:
+		loop Cyklus3
+		cmp esi,2
+		je VypisUzol
+
+		y:
+	mov ecx,ebx
+	loop Cyklus2
+	jmp Koniec
+	Preskoc2:
+	jmp x
+
+	VypisUzol:	
+	cmp edi,5
+	jb Uzol1
+	cmp edi,10
+	jb Uzol2
+	cmp edi,15
+	jb Uzol3
+	cmp edi,20
+	jb Uzol4
+	cmp edi,25
+	jb Uzol5
+	
+	Uzol1:
+	mov al,'1'
+	call WriteChar
+	jmp y
+	Uzol2:
+	mov al,'2'
+	call WriteChar
+	jmp y
+	Uzol3:
+	mov al,'3'
+	call WriteChar
+	jmp y
+	Uzol4:
+	mov al,'4'
+	call WriteChar
+	jmp y
+	Uzol5:
+	mov al,'5'
+	call WriteChar
+	jmp y
+
+	Koniec:
+	exit
+main ENDP
+
+END main
