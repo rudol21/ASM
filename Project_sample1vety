@@ -1,0 +1,114 @@
+;zistovanie typu vety,vipis na obrazovku a do suboru,a hladanie najdlhsieho slova vo vete
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+veta BYTE 20 dup(?),0dh,0ah,0
+roz byte "Rozkazovacia",0dh,0ah,0
+ozn byte "Oznamovacia",0dh,0ah,0
+opy byte "Opytovacia",0dh,0ah,0
+
+outfile	DD ? 
+filename db "test.txt",0
+Sprava DB "Zadali ste male pismena!",0Dh,0Ah,0
+najdlhsieSlovo dd 2 dup(0)
+
+.code
+main PROC
+	call Clrscr
+
+	mov edx,offset veta 
+	mov ecx,20
+	call ReadString
+	mov edi,0
+	Vypis:
+	mov al,veta[edi]
+	cmp al,0
+	je TypVety
+	inc edi
+	jmp Vypis
+
+TypVety:
+mov al,veta[edi-1]
+
+cmp al,33
+je Rozkazovacia
+cmp al,46
+je Oznamovacia
+cmp al,63
+je Opytovacia
+jmp Koniec
+
+Rozkazovacia:
+mov edx,offset roz
+call WriteString
+mov edx,offset roz
+jmp Koniec
+
+Oznamovacia:
+mov edx,offset ozn
+call WriteString
+jmp Koniec
+
+Opytovacia:
+mov edx,offset opy
+call WriteString
+jmp Koniec
+
+Koniec:
+mov ebx,edx
+
+lea edx,filename
+call CreateOutputFile
+
+mov outfile, eax
+mov eax, outfile
+mov edx,ebx
+mov ecx,14
+call WriteToFile
+
+mov eax, outfile
+call CloseFile
+
+
+mov ecx,20 
+mov edi,-1
+mov esi,0
+Cyklus:
+inc edi
+cmp veta[edi],32
+je uloz
+inc esi
+x:
+loop Cyklus
+jmp vypisSlovo
+
+uloz:
+cmp esi,najdlhsieSlovo[4]
+ja uloz2
+mov esi,0
+jmp x
+
+uloz2:
+mov najdlhsieSlovo[4],esi
+add najdlhsieSlovo[0],edi
+;add najdlhsieSlovo[0],1
+sub najdlhsieSlovo[0],esi
+mov esi,0
+jmp x
+
+vypisSlovo:
+mov ecx,najdlhsieSlovo[4]
+mov edi,najdlhsieSlovo[0]
+Cyklus3:
+mov al,veta[edi]
+call writeChar
+inc edi
+loop Cyklus3
+
+	exit
+main ENDP
+
+END main
+
+
