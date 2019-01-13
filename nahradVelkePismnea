@@ -1,0 +1,76 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+S DB 20 dup(?) ,0dh,0ah,0
+pocetPismen dd 1 dup(?) ,0dh,0ah,0
+najpocet db 0,0dh,0ah,0
+pozicia db 0 ,0dh,0ah,0
+filename db "test.txt",0
+outfile	DD ?  
+
+.code
+  
+main PROC
+	call Clrscr
+
+	mov	 edx,OFFSET S
+	mov ecx,19
+	call ReadString
+	mov ecx,eax
+	mov pocetPismen,eax
+	mov edi,-1
+
+	Cyklus:
+	inc edi
+	mov al,S[edi]
+	cmp al,0
+	je vypis
+	cmp al,91
+	jb Nahrad
+
+    loop Cyklus
+	jmp vypis
+
+	Nahrad:
+	dec ecx
+	cmp S[edi],65
+	jb Cyklus
+	mov S[edi],'.'
+	jmp Cyklus
+vypis:
+mov edx,offset S
+call WriteString
+
+lea edx,filename
+call CreateOutputFile
+mov outfile, eax
+mov eax, outfile
+lea edx, S
+mov ecx,lengthof S
+call WriteToFile
+mov eax, outfile
+call CloseFile
+	
+	
+	exit
+main ENDP
+
+END main
+
+;
+jmp najdiNajdlhsie
+najdiNajdlhsie:
+	mov ecx,pocetPismen
+	mov edi,-1
+	mov esi,0
+
+	cyklus2:
+	inc edi
+	mov al,S[edi]
+	cmp al,'.'
+	je Pripocitaj
+
+	Pripocitaj:
+	inc esi
+	loop cyklus2
