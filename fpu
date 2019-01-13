@@ -1,0 +1,23 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+
+a dd 0.8
+b dd 3.2
+e dd 2.0
+
+.code
+main PROC
+	finit
+	call Clrscr
+
+	fld a
+	fadd b
+	fld e
+	fdiv
+	call WriteFloat
+	exit
+main ENDP
+
+END main
