@@ -1,0 +1,79 @@
+TITLE MASM Template						(main.asm)
+
+INCLUDE Irvine32.inc
+.data
+Matica DW -2,6,9,-33,5
+	   DW -4,3,2,1,4
+	   DW 1,-3,2,-1,5
+Matica2 DW 15 dup(?)
+sprava db "Nacitaj prvok",0
+filename db "test.txt",0
+outfile	DD ?  
+.code
+main PROC
+    ;hladanie najmensieho prvku v riadku
+	call Clrscr
+	mov edi,-1
+	mov ecx,3
+	Cyklus1:
+	mov ebx,ecx
+	inc edi
+	mov eax,0
+	mov ax,Matica[edi*2]
+	
+		mov ecx,4
+		Cyklus2:
+		inc edi
+		cmp ax,Matica[edi*2]
+		jge Prirad
+		X:
+		loop Cyklus2
+	or eax,11111111111111110000000000000000b
+	jmp Vypis
+	y:
+	mov ecx,ebx
+	loop Cyklus1
+
+	jmp Koniec
+	Prirad:
+	mov ax,Matica[edi*2]
+	jmp x
+
+	Vypis:
+	call WriteInt
+	jmp y
+	
+	;nacitavanie matice z klvesnice
+	NacitajMaticu:
+	mov ecx,15
+	mov edi,-1
+	Cyklus3:
+	inc edi
+	call Clrscr
+	mov edx,offset sprava
+	call WriteString
+	mov eax,edi
+	call Writeint
+
+	mov al,0ah
+	call WriteChar
+	call ReadInt
+	mov Matica2[edi],ax
+	loop Cyklus3
+	
+	;zapis matice2 do suboru nefunkcne
+	lea edx,filename
+	call CreateOutputFile
+	mov outfile, eax
+	mov eax, outfile
+	lea edx, Matica2
+	mov ecx,30
+	call WriteToFile
+	mov eax, outfile
+	call CloseFile
+
+	Koniec:
+	exit
+main ENDP
+
+END main
