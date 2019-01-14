@@ -1,0 +1,93 @@
+ TITLE MASM Template(main.asm)
+INCLUDE Irvine32.inc
+.data
+	;pole DW 5,2,7,7,4,9,9,9,8,1,3
+	pole DW 20 dup(?)
+	pocetCisel dd 2 dup(0)
+	uvodnaSprava db "Zadajte kolko prvkov ma mat pole:",0ah,0dh,0
+	uvodnaSprava2 db ".prvok pola=",0
+	spravaPocet db "Pocet najviac opakujucich cisel za sebou je:",0ah,0dh,0
+	spravaPozicia db "Najviac opakujuce cisla za sebou sa nachadzaju na pozicii:",0ah,0dh,0
+	pocetNacitanychCisel dd 1 dup(?)
+
+.code
+	main PROC
+	call Clrscr
+
+	mov edx,offset uvodnaSprava
+	call WriteString
+	call ReadInt
+	mov ecx,eax
+	mov pocetNacitanychCisel,eax
+	mov edi,0
+
+	Cyklus2:
+
+	mov eax,edi
+	add eax,48
+	call WriteChar
+	mov edx,offset uvodnaSprava2
+	call WriteString
+
+	call ReadInt
+	mov pole[edi*2],ax
+	inc edi
+	loop Cyklus2
+
+	mov ecx,pocetNacitanychCisel
+	mov edi,0
+	mov esi,1
+	mov ax,pole[edi]
+
+	Cyklus1:
+	inc edi
+	cmp ax,pole[edi*2]
+	jne Prirad
+	inc esi
+	x:
+	loop Cyklus1
+
+	add pocetNacitanychCisel,1
+	cmp pocetNacitanychCisel,esi
+	je Prirad2
+	jmp Vypis
+
+	Prirad:
+	mov ax,pole[edi*2]
+	cmp esi,pocetCisel[4]
+	ja Prehod
+	mov esi,1
+	jmp x
+
+	Prehod:
+	mov pocetCisel[4],esi
+	mov pocetCisel[0],edi
+	sub pocetCisel[0],esi
+	mov esi,1
+	jmp x
+
+	Prirad2:
+	dec esi
+	mov pocetCisel[4],esi
+	mov pocetCisel[0],edi
+	sub pocetCisel[0],esi
+
+	Vypis:
+	mov edx,offset spravaPocet
+	call WriteString
+	mov eax,pocetCisel[4]
+	add eax,48
+	call WriteChar
+	mov al,0ah
+	call WriteChar
+
+	mov edx,offset spravaPozicia
+	call WriteString
+	mov eax,pocetCisel[0]
+	add eax,48
+	call WriteChar
+
+	Koniec:
+exit
+main ENDP
+END main
